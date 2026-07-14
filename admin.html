@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>RocaSalvatella — Panel de consolidación TechSpec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --primary:#009DE0;--primary-dark:#0A6FA0;--accent:#FF8C1A;--ink:#10141A;
+      --error:#E5484D;--success:#2FA157;--warning:#F0A020;--disabled:#9AA9B5;
+      --bg:#F1F5F9;--subtle:#E8EEF4;--paper:#FFFFFF;
+      --text:#0E1B24;--muted:#5B6B78;--border:#E3E9EF;--border-strong:#C9D4DE;
+      --radius:10px;--font:'Inter','Segoe UI',Roboto,Arial,sans-serif;--head:'Poppins','Inter',sans-serif;
+      --sh-card:0 1px 3px rgba(11,42,61,.08),0 1px 2px rgba(11,42,61,.04);
+      --sh-lg:0 12px 32px rgba(11,42,61,.16);
+    }
+    *{box-sizing:border-box;}
+    body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.55;}
+    h1,h2,h3{font-family:var(--head);margin:0;}
+    .appbar{position:sticky;top:0;z-index:100;background:var(--ink);color:#fff;border-bottom:3px solid var(--primary);
+      display:flex;align-items:center;gap:16px;padding:0 22px;height:62px;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+    .appbar .wm{font-family:var(--head);font-weight:800;font-size:17px;}
+    .appbar .wm span{color:var(--primary);}
+    .appbar .ttl{font-weight:600;font-size:14px;border-left:1px solid rgba(255,255,255,.2);padding-left:16px;}
+    .appbar .ttl small{display:block;font-weight:400;font-size:11px;color:#8894A0;}
+    .appbar .sp{flex:1;}
+    .appbar .who{font-size:12px;color:#8894A0;}
+    .appbar a{color:#fff;font-size:12px;text-decoration:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:7px 12px;}
+    .wrap{max-width:1320px;margin:0 auto;padding:22px;}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+    @media(max-width:720px){.kpis{grid-template-columns:1fr 1fr;}}
+    .kpi{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--sh-card);}
+    .kpi .v{font-family:var(--head);font-size:28px;font-weight:700;line-height:1;}
+    .kpi .l{font-size:12px;color:var(--muted);margin-top:6px;}
+    .kpi.bl .v{color:var(--error);}
+    .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+    .toolbar select,.toolbar button{font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:8px;background:#fff;cursor:pointer;}
+    .toolbar .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);}
+    .card{background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh-card);overflow:hidden;margin-bottom:22px;}
+    .sh{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);}
+    .sh h2{font-size:16px;font-weight:700;}
+    .sh p{margin:2px 0 0;font-size:12px;color:var(--muted);}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:top;}
+    th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;position:sticky;top:62px;}
+    .secrow td{background:#F0F6FB;font-weight:700;font-size:12px;color:var(--primary-dark);text-transform:uppercase;letter-spacing:.04em;}
+    .req{color:var(--text);} .req small{display:block;color:var(--muted);font-size:11px;font-weight:400;}
+    .cell{text-align:center;white-space:nowrap;}
+    .v-dot{display:inline-block;width:12px;height:12px;border-radius:50%;cursor:help;}
+    .v-ok{background:var(--success);} .v-ad{background:var(--warning);} .v-bl{background:var(--error);} .v-pd{background:var(--disabled);opacity:.5;}
+    .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;}
+    .tag.ok{background:rgba(47,161,87,.12);color:var(--success);}
+    .tag.ad{background:rgba(240,160,32,.14);color:#946200;}
+    .tag.bl{background:rgba(229,72,77,.12);color:var(--error);}
+    .clienthead{font-family:var(--head);font-weight:700;}
+    .clienthead small{display:block;font-weight:400;font-size:11px;color:var(--muted);}
+    .empty{padding:50px 20px;text-align:center;color:var(--muted);}
+    .empty h2{font-size:18px;margin-bottom:8px;}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:12px 18px;}
+    .legend span{display:inline-flex;gap:6px;align-items:center;}
+    details.drill{border-top:1px solid var(--border);}
+    details.drill summary{padding:12px 18px;cursor:pointer;font-weight:600;font-size:13px;}
+    details.drill .dc{padding:0 18px 16px;}
+    .banner{background:#FFF4E5;border:1px solid #F0C486;color:#7a4a00;border-radius:12px;padding:12px 16px;font-size:13px;margin-bottom:18px;}
+  </style>
+</head>
+<body>
+  <header class="appbar">
+    <span class="wm">Roca<span>Salvatella</span></span>
+    <div class="ttl">Panel de consolidación<small>TechSpec · respuestas de clientes</small></div>
+    <span class="sp"></span>
+    <span class="who" id="who"></span>
+    <a href="/.auth/logout" id="logout" style="display:none">Salir</a>
+  </header>
+
+  <div class="wrap">
+    <div id="banner"></div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v" id="k-resp">–</div><div class="l">Respuestas recibidas</div></div>
+      <div class="kpi"><div class="v" id="k-cli">–</div><div class="l">Clientes distintos</div></div>
+      <div class="kpi bl"><div class="v" id="k-bl">–</div><div class="l">Bloqueantes marcados</div></div>
+      <div class="kpi"><div class="v" id="k-last">–</div><div class="l">Último envío</div></div>
+    </div>
+
+    <div class="toolbar">
+      <label class="chk">Cliente
+        <select id="fCliente"><option value="">Todos</option></select>
+      </label>
+      <label class="chk"><input type="checkbox" id="onlyBl"> Solo requisitos con algún bloqueante</label>
+      <button onclick="load()">↻ Actualizar</button>
+      <span class="sp" style="flex:1"></span>
+      <span class="legend" style="padding:0">
+        <span><i class="v-dot v-ok"></i> Igual</span>
+        <span><i class="v-dot v-ad"></i> Adaptar</span>
+        <span><i class="v-dot v-bl"></i> Bloqueante</span>
+        <span><i class="v-dot v-pd"></i> N/D</span>
+      </span>
+    </div>
+
+    <div id="content"></div>
+  </div>
+
+  <script src="content.js"></script>
+  <script>
+  const STORE='rs-techspec:';
+  const VLABEL={ok:'Igual',ad:'Adaptar',bl:'Bloqueante',pd:'N/D'};
+  let DATA=[]; // respuestas crudas del API
+
+  // Aplana META+SECTIONS a una lista ordenada de {sec, key, label} para las filas de la matriz.
+  function schema(){
+    const { SECTIONS } = window.TECHSPEC_CONTENT;
+    const rows=[];
+    SECTIONS.forEach((sec,si)=>sec.rows.forEach((r,ri)=>rows.push({sec:sec.title,icon:sec.icon,key:`s${si}r${ri}`,label:r[0],def:r[1]})));
+    return rows;
+  }
+  function metaFields(){ return window.TECHSPEC_CONTENT.META.fields; }
+
+  function stOf(resp,key){ return resp.state[STORE+'st_'+key]; }
+  function altOf(resp,key){ return resp.state[STORE+'alt_'+key]||''; }
+  function ntOf(resp,key){ return resp.state[STORE+'nt_'+key]||''; }
+  function metaOf(resp,i){ return resp.state[STORE+'meta_'+i]||''; }
+  function clientName(resp){ return metaOf(resp,0) || resp.client || '—'; }
+
+  async function whoami(){
+    try{
+      const r=await fetch('/.auth/me'); const d=await r.json();
+      const p=d.clientPrincipal;
+      if(p){ document.getElementById('who').textContent=p.userDetails; document.getElementById('logout').style.display='inline-block'; }
+    }catch(e){}
+  }
+
+  async function load(){
+    const c=document.getElementById('content');
+    c.innerHTML='<div class="empty">Cargando…</div>';
+    let res;
+    try{
+      const r=await fetch('api/responses');
+      if(r.status===401){ location.href='/.auth/login/aad'; return; }
+      res=await r.json();
+    }catch(e){
+      document.getElementById('banner').innerHTML='<div class="banner">No se ha podido contactar con la API. Esto solo funciona con el despliegue en Azure Static Web Apps (no en GitHub Pages).</div>';
+      c.innerHTML='<div class="empty"><h2>Sin conexión con el almacén</h2><p>El panel requiere el backend de SWA + Functions. Ver README.</p></div>';
+      setKpis([]); return;
+    }
+    DATA=(res&&res.responses)||[];
+    fillClientes(); render();
+  }
+
+  function setKpis(list){
+    const rows=schema();
+    let bl=0; list.forEach(r=>rows.forEach(row=>{ if(stOf(r,row.key)==='bl') bl++; }));
+    document.getElementById('k-resp').textContent=list.length;
+    document.getElementById('k-cli').textContent=new Set(list.map(clientName)).size;
+    document.getElementById('k-bl').textContent=bl;
+    const last=list.map(r=>r.submittedAt).sort().slice(-1)[0];
+    document.getElementById('k-last').textContent=last?new Date(last).toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}):'–';
+  }
+
+  function fillClientes(){
+    const sel=document.getElementById('fCliente'); const cur=sel.value;
+    const names=[...new Set(DATA.map(clientName))].sort();
+    sel.innerHTML='<option value="">Todos</option>'+names.map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
+  }
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function render(){
+    setKpis(DATA);
+    const fc=document.getElementById('fCliente').value;
+    const onlyBl=document.getElementById('onlyBl').checked;
+    let list=fc?DATA.filter(r=>clientName(r)===fc):DATA;
+    const c=document.getElementById('content');
+
+    if(!list.length){
+      c.innerHTML='<div class="empty"><h2>Todavía no hay respuestas</h2><p>Cuando un cliente pulse «Enviar a RS» en el cuestionario, aparecerá aquí.</p></div>';
+      return;
+    }
+
+    const rows=schema();
+    // Matriz de comparación: filas = requisitos (por sección), columnas = respuestas.
+    let head='<tr><th style="min-width:220px">Requisito</th>'+list.map(r=>
+      `<th class="cell clienthead">${esc(clientName(r))}<small>${new Date(r.submittedAt).toLocaleDateString('es-ES')}</small></th>`).join('')+'</tr>';
+    let body=''; let curSec='';
+    rows.forEach(row=>{
+      const cells=list.map(r=>{ const v=stOf(r,row.key); return {v,alt:altOf(r,row.key),nt:ntOf(r,row.key)}; });
+      if(onlyBl && !cells.some(x=>x.v==='bl')) return;
+      if(row.sec!==curSec){ curSec=row.sec; body+=`<tr class="secrow"><td colspan="${list.length+1}">${row.icon} ${esc(row.sec)}</td></tr>`; }
+      body+=`<tr><td class="req">${esc(row.label)}<small>Default RS: ${esc(row.def)}</small></td>`+
+        cells.map(x=>{
+          if(!x.v) return '<td class="cell"><span class="v-dot v-pd" title="Sin responder"></span></td>';
+          const tip=[VLABEL[x.v],x.alt&&('Alt: '+x.alt),x.nt&&('Nota: '+x.nt)].filter(Boolean).join(' · ');
+          return `<td class="cell"><span class="v-dot v-${x.v}" title="${esc(tip)}"></span></td>`;
+        }).join('')+'</tr>';
+    });
+
+    let drills=list.map(r=>detail(r)).join('');
+
+    c.innerHTML=`<div class="card">
+      <div class="sh"><div><h2>Comparación de requisitos</h2><p>Un punto por respuesta. Pasa el ratón para ver alternativa y notas.</p></div></div>
+      <div style="overflow-x:auto"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="sh"><div><h2>Detalle por respuesta</h2><p>${list.length} respuesta(s). Despliega para ver todas las contestaciones.</p></div></div>
+      ${drills}
+    </div>`;
+  }
+
+  function detail(r){
+    const rows=schema(), meta=metaFields();
+    let bl=rows.filter(row=>stOf(r,row.key)==='bl').length;
+    let ad=rows.filter(row=>stOf(r,row.key)==='ad').length;
+    let metaHtml=meta.map((lb,i)=>{ const v=metaOf(r,i); return v?`<tr><td class="req">${esc(lb)}</td><td colspan="3">${esc(v)}</td></tr>`:''; }).join('');
+    let ansHtml=''; let curSec='';
+    rows.forEach(row=>{ const v=stOf(r,row.key); if(!v) return;
+      if(row.sec!==curSec){curSec=row.sec; ansHtml+=`<tr class="secrow"><td colspan="4">${row.icon} ${esc(row.sec)}</td></tr>`;}
+      ansHtml+=`<tr><td class="req">${esc(row.label)}</td><td><span class="tag ${v}">${VLABEL[v]||v}</span></td><td>${esc(altOf(r,row.key))}</td><td>${esc(ntOf(r,row.key))}</td></tr>`;
+    });
+    return `<details class="drill"><summary>${esc(clientName(r))} — ${new Date(r.submittedAt).toLocaleString('es-ES')} · <span class="tag bl">${bl} bloq.</span> <span class="tag ad">${ad} adaptar</span></summary>
+      <div class="dc"><table>
+        <thead><tr><th>Contexto</th><th colspan="3"></th></tr></thead><tbody>${metaHtml||'<tr><td colspan="4" style="color:var(--muted)">Sin datos de contexto</td></tr>'}</tbody>
+        <thead><tr><th>Requisito</th><th>Veredicto</th><th>Alternativa</th><th>Notas</th></tr></thead><tbody>${ansHtml}</tbody>
+      </table></div></details>`;
+  }
+
+  document.getElementById('fCliente').addEventListener('change',render);
+  document.getElementById('onlyBl').addEventListener('change',render);
+  whoami(); load();
+  </script>
+</body>
+</html>

@@ -9,9 +9,10 @@ Cuestionario de **validación tecnológica** de RocaSalvatella: un único ficher
 1. RS envía al cliente la URL (o el propio fichero `index.html`).
 2. El cliente responde: 12 secciones (frontend, backend, datos, infraestructura, CI/CD, identidad, ciberseguridad, IA/LLM, testing, observabilidad, compliance, integraciones y licenciamiento) + ficha de contexto.
 3. Mientras responde, todo se autoguarda en el `localStorage` de su navegador (puede cerrar y volver).
-4. Al pulsar **Guardar respuestas**, se descarga una copia del propio HTML con las respuestas **incrustadas dentro** (`<script id="saved-state">`). Ese fichero es el entregable: el cliente lo devuelve por email y al abrirlo vemos todas sus respuestas.
+4. Al pulsar **Enviar a RS**, las respuestas viajan a la API (`/api/submit`) y aterrizan en una tabla de Azure. Con **Guardar copia** puede además descargar el HTML con las respuestas **incrustadas** (`<script id="saved-state">`) como respaldo.
+5. El equipo de RS las consulta en el **panel de consolidación** (`/admin`, protegido): comparación cliente × requisito, semáforo de bloqueantes y detalle por respuesta.
 
-Sin backend, sin base de datos, sin cookies de terceros: el documento **es** el dato.
+En N1/N2 el documento **es** el dato (sin backend). En N3 el dato se centraliza en Azure y se explota desde el panel.
 
 ## Niveles de recogida
 
@@ -76,6 +77,23 @@ az storage entity query --table-name techspecresponses \
   --filter "PartitionKey eq '<cliente>'" -o json
 ```
 
+### Panel de consolidación (`/admin`)
+
+Vista interna para el equipo RS, servida por la misma SWA en `/admin` y protegida por rol `rs`:
+
+- **KPIs**: respuestas recibidas, clientes distintos, bloqueantes marcados, último envío.
+- **Matriz de comparación**: filas = requisitos (por sección), columnas = respuestas; un punto de color por veredicto (Igual/Adaptar/Bloqueante/N/D) con alternativa y notas en el tooltip. Filtro "solo requisitos con algún bloqueante" = el semáforo.
+- **Detalle por respuesta**: todas las contestaciones de un cliente, con su ficha de contexto.
+
+Acceso: se entra vía `/.auth/login/aad` (Entra ID). Para dar acceso a alguien, asignarle el rol `rs` en la SWA:
+
+```bash
+# invitar a un usuario al rol "rs" (genera enlace de invitación)
+az staticwebapp users invite -n rs-techspec-validation \
+  --authentication-provider aad --user-details <email> \
+  --roles rs --domain <swa>.azurestaticapps.net --invitation-expiration-in-hours 168 --subscription $SUB
+```
+
 En GitHub Pages el botón «Enviar a RS» falla con elegancia: avisa al usuario y le remite a «Guardar copia» (N2). El fichero descargado sigue funcionando como respaldo universal.
 
 ## Roles y permisos necesarios, por escenario
@@ -113,14 +131,22 @@ Para una versión con marca del cliente: duplicar el fichero, ajustar título/su
 ## Estructura
 
 ```
-index.html   El cuestionario completo (contenido + estilo + lógica, autocontenido)
-README.md    Este documento
+index.html                    Cuestionario (consume content.js; la copia descargada lo incrusta)
+admin.html                    Panel de consolidación (interno, protegido por rol "rs")
+content.js                    Fuente única del contenido (META + SECTIONS) para ambos
+staticwebapp.config.json      Rutas y auth de SWA (/admin y /api/responses → rol "rs")
+api/
+  host.json                   Config de Azure Functions
+  package.json                Dependencias de la API
+  src/functions/submit.js     POST /api/submit  — recibe respuestas (anónimo)
+  src/functions/responses.js  GET  /api/responses — lee respuestas (rol "rs")
+README.md                     Este documento
 ```
 
 ## Roadmap
 
 - [x] N3: `/api/submit` con SWA Functions + Table Storage y token por cliente en la URL (`?c=<id>`) — código listo, pendiente solo del rol Azure para activarlo
-- [ ] Panel de consolidación multi-cliente (comparativa de TechSpecs, semáforo de bloqueantes)
+- [x] Panel de consolidación multi-cliente (comparativa de TechSpecs, semáforo de bloqueantes) — código listo, pendiente del rol Azure para activarlo
 - [ ] Export a informe (PDF/PPTX con plantilla RS) desde las respuestas estructuradas
 - [ ] Versionado del cuestionario (que cada respuesta registre contra qué versión del stack de referencia se contestó)
 
