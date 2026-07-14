@@ -196,7 +196,8 @@
         }).join('')+'</tr>';
     });
 
-    let drills=list.map(r=>detail(r)).join('');
+    // Detalle abierto por defecto si hay pocas respuestas, para ver los comentarios sin clicar.
+    let drills=list.map((r,i)=>detail(r, list.length<=3 || !!fc)).join('');
 
     c.innerHTML=`<div class="card">
       <div class="sh"><div><h2>Comparación de requisitos</h2><p>Un punto por respuesta. Pasa el ratón para ver alternativa y notas.</p></div></div>
@@ -208,7 +209,7 @@
     </div>`;
   }
 
-  function detail(r){
+  function detail(r, open){
     const rows=schema(), meta=metaFields();
     let bl=rows.filter(row=>stOf(r,row.key)==='bl').length;
     let ad=rows.filter(row=>stOf(r,row.key)==='ad').length;
@@ -218,7 +219,7 @@
       if(row.sec!==curSec){curSec=row.sec; ansHtml+=`<tr class="secrow"><td colspan="4">${row.icon} ${esc(row.sec)}</td></tr>`;}
       ansHtml+=`<tr><td class="req">${esc(row.label)}</td><td><span class="tag ${v}">${VLABEL[v]||v}</span></td><td>${esc(altOf(r,row.key))}</td><td>${esc(ntOf(r,row.key))}</td></tr>`;
     });
-    return `<details class="drill"><summary>${esc(clientName(r))} — ${new Date(r.submittedAt).toLocaleString('es-ES')} · <span class="tag bl">${bl} bloq.</span> <span class="tag ad">${ad} adaptar</span></summary>
+    return `<details class="drill"${open?' open':''}><summary>${esc(clientName(r))} — ${new Date(r.submittedAt).toLocaleString('es-ES')} · <span class="tag bl">${bl} bloq.</span> <span class="tag ad">${ad} adaptar</span></summary>
       <div class="dc"><table>
         <thead><tr><th>Contexto</th><th colspan="3"></th></tr></thead><tbody>${metaHtml||'<tr><td colspan="4" style="color:var(--muted)">Sin datos de contexto</td></tr>'}</tbody>
         <thead><tr><th>Requisito</th><th>Veredicto</th><th>Alternativa</th><th>Notas</th></tr></thead><tbody>${ansHtml}</tbody>

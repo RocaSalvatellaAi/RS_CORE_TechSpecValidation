@@ -163,6 +163,20 @@
   </div>
   <div class="saved" id="saved">✓ Guardado</div>
 
+  <!-- Modal de confirmación de envío -->
+  <div id="modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(10,13,18,.55);align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:16px;max-width:420px;width:100%;box-shadow:0 24px 60px rgba(11,42,61,.35);overflow:hidden;">
+      <div id="modalHead" style="padding:26px 26px 8px;text-align:center;">
+        <div id="modalIcon" style="font-size:44px;line-height:1;">✓</div>
+        <h2 id="modalTitle" style="font-family:var(--head);font-size:20px;margin:12px 0 6px;">Enviado correctamente</h2>
+        <p id="modalMsg" style="color:var(--muted);font-size:13.5px;margin:0;">Tus respuestas han llegado a RocaSalvatella. Gracias.</p>
+      </div>
+      <div style="padding:18px 26px 24px;text-align:center;">
+        <button onclick="closeModal()" style="font-family:inherit;font-weight:700;font-size:14px;border:none;border-radius:9px;padding:11px 26px;cursor:pointer;background:var(--primary);color:#fff;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Estado incrustado: aquí se guardan las respuestas dentro del propio fichero al pulsar «Guardar». -->
   <script type="application/json" id="saved-state">{}</script>
   <script src="content.js"></script>
@@ -304,21 +318,43 @@
     if(b){ b.classList.remove('dirty'); b.classList.add('done'); b.querySelector('.lbl').textContent='Descargado ✓'; clearTimeout(saveFbT); saveFbT=setTimeout(updateSaveBtn,2000); }
 
   // ── Nivel 3: envío directo a RocaSalvatella (POST /api/submit, SWA Functions) ──
+  // Recoge el estado ACTUAL de todos los campos del formulario (red de seguridad:
+  // así se envía todo lo escrito aunque algún evento de autoguardado se perdiera).
+  function collectState(){
+    document.querySelectorAll('[data-save]').forEach(el=>{
+      const key=STORE+(el.type==='radio'?el.name:el.id);
+      if(el.type==='radio'){ if(el.checked) STATE[key]=el.value; }
+      else if(el.value!=='') STATE[key]=el.value;
+    });
+    persistEmbedded();
+    return STATE;
+  }
+  function showModal(ok,title,msg){
+    document.getElementById('modalIcon').textContent = ok?'✓':'⚠';
+    document.getElementById('modalIcon').style.color = ok?'var(--success)':'var(--error)';
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalMsg').textContent = msg;
+    document.getElementById('modal').style.display='flex';
+  }
+  function closeModal(){ document.getElementById('modal').style.display='none'; }
+
   async function sendAnswers(){
     const b=document.getElementById('btnSend');
-    if(!Object.keys(STATE).length){ alert('No hay respuestas todavía.'); return; }
+    collectState(); // guardar SIEMPRE lo que haya escrito antes de enviar
+    if(!Object.keys(STATE).length){ showModal(false,'Aún no has respondido nada','Rellena al menos un campo o marca un veredicto antes de enviar.'); return; }
     b.disabled=true; b.querySelector('.lbl').textContent='Enviando…';
     try{
       const r=await fetch('api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({client:new URLSearchParams(location.search).get('c')||'',state:STATE,page:location.href})});
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      const d=await r.json(); if(!d.ok) throw new Error(d.error||'error');
+      if(!r.ok) throw new Error('El servidor respondió '+r.status);
+      const d=await r.json(); if(!d.ok) throw new Error(d.error||'respuesta no válida del servidor');
       dirty=false;
       b.classList.add('done'); b.querySelector('.lbl').textContent='Enviado ✓';
+      showModal(true,'¡Enviado correctamente!','Tus respuestas han llegado a RocaSalvatella. Gracias.');
       setTimeout(()=>{b.disabled=false;b.classList.remove('done');b.querySelector('.lbl').textContent='Enviar a RS';},2500);
     }catch(e){
       b.disabled=false; b.querySelector('.lbl').textContent='Enviar a RS';
-      alert('No se ha podido enviar desde esta versión de la página. Pulsa «Guardar copia» para descargar el fichero con tus respuestas y envíanoslo por email.');
+      showModal(false,'No se ha podido enviar','Detalle: '+(e.message||e)+'. Tus respuestas siguen guardadas en este navegador; puedes reintentar o usar «Guardar copia».');
     }
   }
   }
