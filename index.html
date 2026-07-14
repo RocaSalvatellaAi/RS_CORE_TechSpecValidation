@@ -159,6 +159,7 @@
 
     <footer>
       Documento de trabajo — RocaSalvatella · Validación tecnológica (TechSpec). Mientras rellenas, las respuestas se autoguardan en tu navegador (no se pierden si cierras y reabres este fichero). Pulsa «Enviar a RS» para hacérnoslas llegar directamente; «Guardar copia» descarga este HTML con los datos incrustados, por si quieres conservarlo o enviarlo por email.
+      <br><span style="opacity:.55">Versión 3 · envío directo</span>
     </footer>
   </div>
   <div class="saved" id="saved">✓ Guardado</div>
@@ -235,14 +236,12 @@
   // enviarla y recibirla como un único fichero autocontenido. Sin localStorage.
   let STATE={}, dirty=false;
   (function(){
+    // Solo se precarga el estado incrustado en el fichero (copia descargada N2).
+    // En la web hosteada no hay persistencia local: al refrescar, el formulario queda limpio.
     let embedded={};
     const el=document.getElementById('saved-state');
     if(el){ try{ embedded=JSON.parse(el.textContent||'{}')||{}; }catch(e){ embedded={}; } }
-    // Red de seguridad: autoguardado en el navegador para el propio cliente.
-    let local={};
-    try{ Object.keys(localStorage).forEach(k=>{ if(k.startsWith(STORE)) local[k]=localStorage.getItem(k); }); }catch(e){}
-    // Lo incrustado en el fichero manda sobre el autoguardado local.
-    STATE=Object.assign(local, embedded);
+    STATE=embedded;
   })();
   function persistEmbedded(){
     const el=document.getElementById('saved-state');
@@ -262,7 +261,6 @@
     const key=STORE+(el.type==='radio'?el.name:el.id);
     const val = el.type==='radio' ? (el.checked?el.value:undefined) : el.value;
     if(val!==undefined) STATE[key]=val;
-    try{ if(val!==undefined) localStorage.setItem(key,val); }catch(e){}
     persistEmbedded(); dirty=true;
     clearTimeout(saveFbT); updateSaveBtn();
     updateProgress(); toast();
