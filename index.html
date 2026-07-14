@@ -118,6 +118,20 @@
   </style>
 </head>
 <body>
+  <div id="jserr" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#E5484D;color:#fff;font:13px/1.4 monospace;padding:12px 16px;white-space:pre-wrap;"></div>
+  <script>
+    // Diagnóstico: cualquier error de JS se muestra en pantalla (banner rojo abajo).
+    window.addEventListener('error',function(e){
+      var d=document.getElementById('jserr'); if(!d)return;
+      d.style.display='block';
+      d.textContent='⚠ Error JS: '+(e.message||e.error||'desconocido')+(e.filename?(' @ '+e.filename.split('/').pop()+':'+e.lineno):'');
+    });
+    window.addEventListener('unhandledrejection',function(e){
+      var d=document.getElementById('jserr'); if(!d)return;
+      d.style.display='block';
+      d.textContent='⚠ Error de red/promesa: '+((e.reason&&e.reason.message)||e.reason||'desconocido');
+    });
+  </script>
   <header class="appbar">
     <span style="font-family:var(--head);font-weight:800;font-size:17px;letter-spacing:.01em">Roca<span style="color:var(--primary)">Salvatella</span></span>
     <div class="ttl">Validación tecnológica<small>TechSpec · RocaSalvatella</small></div>
