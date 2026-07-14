@@ -46,7 +46,9 @@
     table{width:100%;border-collapse:collapse;}
     th,td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:top;}
     th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;}
-    .secrow td{background:#F0F6FB;font-weight:700;font-size:12px;color:var(--primary-dark);text-transform:uppercase;letter-spacing:.04em;}
+    .secrow td{background:var(--primary-dark);color:#fff;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:11px 14px;}
+    tr.req-row td{border-bottom:1px solid var(--border);}
+    td.req{background:#FbFcFd;}
     .ans .verdict{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
     .ans .alt{font-size:13px;color:var(--text);}
     .ans .nt{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
@@ -202,7 +204,7 @@
       const cells=list.map(r=>({v:stOf(r,row.key),alt:altOf(r,row.key),nt:ntOf(r,row.key)}));
       if(onlyBl && !cells.some(x=>x.v==='bl')) return;
       if(row.sec!==curSec){ curSec=row.sec; body+=`<tr class="secrow"><td colspan="${list.length+1}">${row.icon} ${esc(row.sec)}</td></tr>`; }
-      body+=`<tr><td class="req">${esc(row.label)}<small>Default RS: ${esc(row.def)}</small></td>`+
+      body+=`<tr class="req-row"><td class="req">${esc(row.label)}<small>Default RS: ${esc(row.def)}</small></td>`+
         cells.map(x=>{
           if(!x.v && !x.alt && !x.nt) return '<td class="ans"><span class="v-dot v-pd"></span> <span style="color:var(--disabled);font-size:12px">Sin responder</span></td>';
           let h='<td class="ans">';
