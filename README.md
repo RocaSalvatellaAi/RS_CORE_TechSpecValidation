@@ -7,7 +7,6 @@ Cuestionario de **validación tecnológica** de RocaSalvatella: un único ficher
 - Cuestionario: <https://purple-water-0e8e5fa03.7.azurestaticapps.net/?c=CLIENTE>
 - Panel interno: <https://purple-water-0e8e5fa03.7.azurestaticapps.net/admin> (rol `rs`)
 - Almacén: cuenta `rstechspecdata` → tabla `techspecresponses`
-- Mirror estático (solo N1/N2, sin API): <https://rocasalvatellaai.github.io/RS_CORE_TechSpecValidation/>
 
 Redesplegar = push a `main` (workflow `Azure Static Web Apps CI/CD`). Reproducir en limpio: `./deploy.sh`.
 
