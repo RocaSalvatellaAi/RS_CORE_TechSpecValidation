@@ -369,6 +369,8 @@
     if(!Object.keys(STATE).length){ showModal(false,'Aún no has respondido nada','Rellena al menos un campo o marca un veredicto antes de enviar.'); return; }
     const client=resolveClient();
     if(!client){ showModal(false,'Falta el nombre de empresa','Indica el nombre de tu empresa (arriba, en «Empresa / unidad») para poder identificar tus respuestas.'); return; }
+    // Reflejar el identificador en la URL (?c=) aunque se abriera la URL pelada.
+    try{ history.replaceState(null,'','?c='+encodeURIComponent(client)); }catch(e){}
     b.disabled=true; b.querySelector('.lbl').textContent='Enviando…';
     // 1er popup, inmediato al pulsar (un check)
     showModal(true,'Enviado a Roca','Estamos registrando tus respuestas…',false,'✓');
