@@ -39,16 +39,44 @@ Sigue la norma de despliegue RS (definida en `RS_CORE_AgentKit`):
 ### Comandos
 
 ```bash
-# GitHub Pages (interino, repo público)
+# GitHub Pages (interino, repo público — solo N1/N2, la API no corre aquí)
 gh api -X POST repos/<org>/<repo>/pages -f "source[branch]=main" -f "source[path]=/"
-
-# Azure Static Web Apps (norma; requiere rol Contributor en un resource group)
-az staticwebapp create \
-  --name rs-techspec-validation --resource-group <rg> \
-  --source https://github.com/<org>/<repo> --branch main \
-  --app-location "/" --location westeurope --sku Free \
-  --token "$(gh auth token)"
 ```
+
+### Activar Nivel 3 (SWA + Functions + Table Storage)
+
+El código ya está en el repo (`api/src/functions/submit.js` + botón «Enviar a RS» en `index.html`). Con rol `Contributor` sobre un resource group, la activación es:
+
+```bash
+RG=<rg>; LOC=westeurope; SUB=<subscription-id>
+
+# 1. Almacén de respuestas (Table Storage; céntimos al mes)
+az storage account create -n rstechspec -g $RG -l $LOC --sku Standard_LRS --subscription $SUB
+CS=$(az storage account show-connection-string -n rstechspec -g $RG --subscription $SUB -o tsv)
+
+# 2. Static Web App con la API integrada (Free incluye las Functions gestionadas)
+az staticwebapp create \
+  --name rs-techspec-validation --resource-group $RG --subscription $SUB \
+  --source https://github.com/RocaSalvatellaAi/RS_CORE_TechSpecValidation --branch main \
+  --app-location "/" --api-location "api" --location $LOC --sku Free \
+  --token "$(gh auth token)"
+
+# 3. Conectar la API con el almacén
+az staticwebapp appsettings set -n rs-techspec-validation --subscription $SUB \
+  --setting-names STORAGE_CONNECTION_STRING="$CS"
+```
+
+Cada cliente recibe su URL con identificador: `https://<swa>.azurestaticapps.net/?c=<cliente>` — el parámetro `c` particiona las respuestas en la tabla `techspecresponses` (una fila por envío, JSON completo troceado en `payload0..N`).
+
+Leer las respuestas:
+
+```bash
+az storage entity query --table-name techspecresponses \
+  --connection-string "$CS" \
+  --filter "PartitionKey eq '<cliente>'" -o json
+```
+
+En GitHub Pages el botón «Enviar a RS» falla con elegancia: avisa al usuario y le remite a «Guardar copia» (N2). El fichero descargado sigue funcionando como respaldo universal.
 
 ## Roles y permisos necesarios, por escenario
 
@@ -91,7 +119,7 @@ README.md    Este documento
 
 ## Roadmap
 
-- [ ] N3: `/api/submit` con SWA Functions + Table Storage y token por cliente en la URL (`?c=<id>`)
+- [x] N3: `/api/submit` con SWA Functions + Table Storage y token por cliente en la URL (`?c=<id>`) — código listo, pendiente solo del rol Azure para activarlo
 - [ ] Panel de consolidación multi-cliente (comparativa de TechSpecs, semáforo de bloqueantes)
 - [ ] Export a informe (PDF/PPTX con plantilla RS) desde las respuestas estructuradas
 - [ ] Versionado del cuestionario (que cada respuesta registre contra qué versión del stack de referencia se contestó)

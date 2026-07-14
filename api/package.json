@@ -1,0 +1,11 @@
+{
+  "name": "techspec-api",
+  "version": "1.0.0",
+  "description": "API de recogida de respuestas TechSpec (Nivel 3) — Azure Functions gestionadas por Static Web Apps",
+  "main": "src/functions/*.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@azure/functions": "^4.5.0",
+    "@azure/data-tables": "^13.2.2"
+  }
+}
