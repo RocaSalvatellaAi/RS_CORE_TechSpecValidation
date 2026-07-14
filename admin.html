@@ -45,8 +45,14 @@
     .sh p{margin:2px 0 0;font-size:12px;color:var(--muted);}
     table{width:100%;border-collapse:collapse;}
     th,td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:top;}
-    th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;position:sticky;top:62px;}
+    th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;}
     .secrow td{background:#F0F6FB;font-weight:700;font-size:12px;color:var(--primary-dark);text-transform:uppercase;letter-spacing:.04em;}
+    .ans .verdict{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+    .ans .alt{font-size:13px;color:var(--text);}
+    .ans .nt{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
+    .ans .alt b{color:var(--primary-dark);}
+    td.ans{min-width:210px;border-left:1px solid var(--border);}
+    .ficha td{font-size:13px;} .ficha .k{color:var(--muted);font-weight:600;width:34%;}
     .req{color:var(--text);} .req small{display:block;color:var(--muted);font-size:11px;font-weight:400;}
     .cell{text-align:center;white-space:nowrap;}
     .v-dot{display:inline-block;width:12px;height:12px;border-radius:50%;cursor:help;}
@@ -179,51 +185,42 @@
       return;
     }
 
-    const rows=schema();
-    // Matriz de comparación: filas = requisitos (por sección), columnas = respuestas.
-    let head='<tr><th style="min-width:220px">Requisito</th>'+list.map(r=>
-      `<th class="cell clienthead">${esc(clientName(r))}<small>${new Date(r.submittedAt).toLocaleDateString('es-ES')}</small></th>`).join('')+'</tr>';
+    const rows=schema(), meta=metaFields();
+    const colhead='<th style="min-width:230px">Requisito</th>'+list.map(r=>
+      `<th class="ans clienthead">${esc(clientName(r))}<small>${new Date(r.submittedAt).toLocaleString('es-ES')}</small></th>`).join('');
+
+    // 1) Ficha de cliente / proyecto (todos los campos de contexto).
+    let ficha=meta.map((lb,i)=>{
+      const vals=list.map(r=>metaOf(r,i));
+      if(onlyBl) return ''; // en modo bloqueantes la ficha no aporta
+      return `<tr><td class="k">${esc(lb)}</td>`+vals.map(v=>`<td class="ans">${v?esc(v):'<span style="color:var(--disabled)">—</span>'}</td>`).join('')+'</tr>';
+    }).join('');
+
+    // 2) Comparación de requisitos con veredicto + alternativa + notas en cada celda.
     let body=''; let curSec='';
     rows.forEach(row=>{
-      const cells=list.map(r=>{ const v=stOf(r,row.key); return {v,alt:altOf(r,row.key),nt:ntOf(r,row.key)}; });
+      const cells=list.map(r=>({v:stOf(r,row.key),alt:altOf(r,row.key),nt:ntOf(r,row.key)}));
       if(onlyBl && !cells.some(x=>x.v==='bl')) return;
       if(row.sec!==curSec){ curSec=row.sec; body+=`<tr class="secrow"><td colspan="${list.length+1}">${row.icon} ${esc(row.sec)}</td></tr>`; }
       body+=`<tr><td class="req">${esc(row.label)}<small>Default RS: ${esc(row.def)}</small></td>`+
         cells.map(x=>{
-          if(!x.v) return '<td class="cell"><span class="v-dot v-pd" title="Sin responder"></span></td>';
-          const tip=[VLABEL[x.v],x.alt&&('Alt: '+x.alt),x.nt&&('Nota: '+x.nt)].filter(Boolean).join(' · ');
-          return `<td class="cell"><span class="v-dot v-${x.v}" title="${esc(tip)}"></span></td>`;
+          if(!x.v && !x.alt && !x.nt) return '<td class="ans"><span class="v-dot v-pd"></span> <span style="color:var(--disabled);font-size:12px">Sin responder</span></td>';
+          let h='<td class="ans">';
+          h+=`<div class="verdict"><span class="v-dot v-${x.v||'pd'}"></span> <span class="tag ${x.v||''}">${VLABEL[x.v]||'—'}</span></div>`;
+          if(x.alt) h+=`<div class="alt"><b>Alternativa:</b> ${esc(x.alt)}</div>`;
+          if(x.nt)  h+=`<div class="nt">📝 ${esc(x.nt)}</div>`;
+          return h+'</td>';
         }).join('')+'</tr>';
     });
 
-    // Detalle abierto por defecto si hay pocas respuestas, para ver los comentarios sin clicar.
-    let drills=list.map((r,i)=>detail(r, list.length<=3 || !!fc)).join('');
-
     c.innerHTML=`<div class="card">
-      <div class="sh"><div><h2>Comparación de requisitos</h2><p>Un punto por respuesta. Pasa el ratón para ver alternativa y notas.</p></div></div>
-      <div style="overflow-x:auto"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+      <div class="sh"><div><h2>Ficha de cliente / proyecto</h2><p>Datos de contexto de cada respuesta.</p></div></div>
+      <div style="overflow-x:auto"><table class="ficha"><thead><tr><th>Campo</th>${list.map(r=>`<th class="ans clienthead">${esc(clientName(r))}</th>`).join('')}</tr></thead><tbody>${ficha||'<tr><td colspan="'+(list.length+1)+'" style="color:var(--muted)">Sin datos de contexto</td></tr>'}</tbody></table></div>
     </div>
     <div class="card">
-      <div class="sh"><div><h2>Detalle por respuesta</h2><p>${list.length} respuesta(s). Despliega para ver todas las contestaciones.</p></div></div>
-      ${drills}
+      <div class="sh"><div><h2>Comparación de requisitos</h2><p>Veredicto, alternativa/preferencia y notas de cada cliente, requisito a requisito.</p></div></div>
+      <div style="overflow-x:auto"><table><thead><tr>${colhead}</tr></thead><tbody>${body}</tbody></table></div>
     </div>`;
-  }
-
-  function detail(r, open){
-    const rows=schema(), meta=metaFields();
-    let bl=rows.filter(row=>stOf(r,row.key)==='bl').length;
-    let ad=rows.filter(row=>stOf(r,row.key)==='ad').length;
-    let metaHtml=meta.map((lb,i)=>{ const v=metaOf(r,i); return v?`<tr><td class="req">${esc(lb)}</td><td colspan="3">${esc(v)}</td></tr>`:''; }).join('');
-    let ansHtml=''; let curSec='';
-    rows.forEach(row=>{ const v=stOf(r,row.key); if(!v) return;
-      if(row.sec!==curSec){curSec=row.sec; ansHtml+=`<tr class="secrow"><td colspan="4">${row.icon} ${esc(row.sec)}</td></tr>`;}
-      ansHtml+=`<tr><td class="req">${esc(row.label)}</td><td><span class="tag ${v}">${VLABEL[v]||v}</span></td><td>${esc(altOf(r,row.key))}</td><td>${esc(ntOf(r,row.key))}</td></tr>`;
-    });
-    return `<details class="drill"${open?' open':''}><summary>${esc(clientName(r))} — ${new Date(r.submittedAt).toLocaleString('es-ES')} · <span class="tag bl">${bl} bloq.</span> <span class="tag ad">${ad} adaptar</span></summary>
-      <div class="dc"><table>
-        <thead><tr><th>Contexto</th><th colspan="3"></th></tr></thead><tbody>${metaHtml||'<tr><td colspan="4" style="color:var(--muted)">Sin datos de contexto</td></tr>'}</tbody>
-        <thead><tr><th>Requisito</th><th>Veredicto</th><th>Alternativa</th><th>Notas</th></tr></thead><tbody>${ansHtml}</tbody>
-      </table></div></details>`;
   }
 
   document.getElementById('fCliente').addEventListener('change',render);
