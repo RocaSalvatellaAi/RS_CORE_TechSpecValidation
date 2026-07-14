@@ -328,6 +328,7 @@
     dirty=false;
     const b=document.getElementById('btnSave');
     if(b){ b.classList.remove('dirty'); b.classList.add('done'); b.querySelector('.lbl').textContent='Descargado ✓'; clearTimeout(saveFbT); saveFbT=setTimeout(updateSaveBtn,2000); }
+  }
 
   // ── Nivel 3: envío directo a RocaSalvatella (POST /api/submit, SWA Functions) ──
   // Recoge el estado ACTUAL de todos los campos del formulario (red de seguridad:
@@ -372,7 +373,6 @@
       b.disabled=false; b.querySelector('.lbl').textContent='Enviar a RS';
       showModal(false,'No se ha podido enviar','Detalle: '+(e.message||e)+'. Tus respuestas siguen guardadas en este navegador; puedes reintentar o usar «Guardar copia».',true);
     }
-  }
   }
 
   load();
