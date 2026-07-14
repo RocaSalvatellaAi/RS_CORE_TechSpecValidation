@@ -342,8 +342,8 @@
     persistEmbedded();
     return STATE;
   }
-  function showModal(ok,title,msg,closable){
-    document.getElementById('modalIcon').textContent = ok?'✓':'⚠';
+  function showModal(ok,title,msg,closable,icon){
+    document.getElementById('modalIcon').textContent = icon || (ok?'✓':'⚠');
     document.getElementById('modalIcon').style.color = ok?'var(--success)':'var(--error)';
     document.getElementById('modalTitle').textContent = title;
     document.getElementById('modalMsg').textContent = msg;
@@ -357,8 +357,8 @@
     collectState(); // guardar SIEMPRE lo que haya escrito antes de enviar
     if(!Object.keys(STATE).length){ showModal(false,'Aún no has respondido nada','Rellena al menos un campo o marca un veredicto antes de enviar.'); return; }
     b.disabled=true; b.querySelector('.lbl').textContent='Enviando…';
-    // 1er popup, inmediato al pulsar
-    showModal(true,'Enviado a Roca','Estamos registrando tus respuestas…',false);
+    // 1er popup, inmediato al pulsar (un check)
+    showModal(true,'Enviado a Roca','Estamos registrando tus respuestas…',false,'✓');
     try{
       const r=await fetch('api/submit',{method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({client:new URLSearchParams(location.search).get('c')||'',state:STATE,page:location.href})});
@@ -367,7 +367,7 @@
       dirty=false;
       b.classList.add('done'); b.querySelector('.lbl').textContent='Enviado ✓';
       // 2º popup, tras confirmar recepción en el servidor
-      setTimeout(()=>{ showModal(true,'Recibido en Roca','Hemos recibido tus respuestas. Te contactaremos muy pronto.',true); },1800);
+      setTimeout(()=>{ showModal(true,'Recibido en Roca','Hemos recibido tus respuestas. Te contactaremos muy pronto.',true,'✓✓'); },1800);
       setTimeout(()=>{b.disabled=false;b.classList.remove('done');b.querySelector('.lbl').textContent='Enviar a RS';},2600);
     }catch(e){
       b.disabled=false; b.querySelector('.lbl').textContent='Enviar a RS';
