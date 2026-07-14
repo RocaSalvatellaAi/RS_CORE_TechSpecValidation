@@ -2,7 +2,14 @@
 
 Cuestionario de **validación tecnológica** de RocaSalvatella: un único fichero HTML autocontenido que se envía a cualquier cliente para recoger su TechSpec (stack, seguridad, compliance, integraciones) y contrastarla con nuestro stack de referencia (React + FastAPI + PostgreSQL + Azure), punto por punto, con tres veredictos posibles: **Igual / Adaptar / Bloqueante**.
 
-**Demo / versión viva:** la página se sirve como estático (GitHub Pages o Azure Static Web Apps, ver despliegue más abajo).
+**Desplegado (N3 activo)** en Azure Static Web Apps · suscripción *TechSolutions Projects AI* · RG `rg-techspec`:
+
+- Cuestionario: <https://purple-water-0e8e5fa03.7.azurestaticapps.net/?c=CLIENTE>
+- Panel interno: <https://purple-water-0e8e5fa03.7.azurestaticapps.net/admin> (rol `rs`)
+- Almacén: cuenta `rstechspecdata` → tabla `techspecresponses`
+- Mirror estático (solo N1/N2, sin API): <https://rocasalvatellaai.github.io/RS_CORE_TechSpecValidation/>
+
+Redesplegar = push a `main` (workflow `Azure Static Web Apps CI/CD`). Reproducir en limpio: `./deploy.sh`.
 
 ## Cómo funciona
 
@@ -140,6 +147,7 @@ api/
   package.json                Dependencias de la API
   src/functions/submit.js     POST /api/submit  — recibe respuestas (anónimo)
   src/functions/responses.js  GET  /api/responses — lee respuestas (rol "rs")
+deploy.sh                     Provisiona todo en Azure de una tirada (idempotente)
 README.md                     Este documento
 ```
 
