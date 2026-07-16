@@ -74,6 +74,8 @@
     .btn-save{background:var(--success);border-color:var(--success);color:#fff;margin-right:5px;}
     .btn-save:hover{background:#268049;}
     .btn-cancel:hover{border-color:var(--error);color:var(--error);}
+    .btn-del{font-family:inherit;font-size:12px;font-weight:600;border-radius:8px;padding:7px 12px;cursor:pointer;border:1px solid var(--border-strong);background:#fff;color:var(--muted);white-space:nowrap;}
+    .btn-del:hover{border-color:var(--error);color:var(--error);background:rgba(229,72,77,.06);}
     tr.editing{background:#F4FAFE;}
     tr.editing td{vertical-align:top;}
     .ed-v{font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;width:100%;background:#fff;}
@@ -224,7 +226,7 @@
     }).join('');
     const edited=resp.editedAt?` · editado ${fmtDate(resp.editedAt)}${resp.editedBy?' por '+esc(resp.editedBy):''}`:'';
     return `<div class="card client-block" data-id="${esc(resp.id)}" data-client="${esc(resp.client)}">
-      <div class="sh"><div><h2>${esc(clientName(resp))}</h2><p>Enviado ${fmtDate(resp.submittedAt)}${edited}</p></div></div>
+      <div class="sh"><div><h2>${esc(clientName(resp))}</h2><p>Enviado ${fmtDate(resp.submittedAt)}${edited}</p></div><span class="sp" style="flex:1"></span><button type="button" class="btn-del">🗑 Eliminar respuesta</button></div>
       <div class="ctxwrap">${ctx||'<div class="ctx"><span class="muted">Sin datos de contexto</span></div>'}</div>
       ${sections}
     </div>`;
@@ -300,13 +302,34 @@
     }
   }
 
+  async function deleteResp(btn){
+    const block=btn.closest('.client-block');
+    const resp=findResp(block.dataset.id); if(!resp) return;
+    if(!confirm(`¿Eliminar definitivamente la respuesta de «${clientName(resp)}» (${fmtDate(resp.submittedAt)})?\n\nEsta acción no se puede deshacer.`)) return;
+    btn.disabled=true; btn.textContent='Eliminando…';
+    try{
+      const r=await fetch('api/delete',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({client:resp.client,id:resp.id})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok || !d.ok) throw new Error(d.error||('El servidor respondió '+r.status));
+      DATA=DATA.filter(x=>String(x.id)!==String(resp.id));
+      fillClientes(); render();
+      toast('Respuesta eliminada');
+    }catch(e){
+      btn.disabled=false; btn.textContent='🗑 Eliminar respuesta';
+      toast('No se pudo eliminar: '+(e.message||e), true);
+    }
+  }
+
   document.getElementById('content').addEventListener('click',e=>{
     const editBtn=e.target.closest('.btn-edit');
     const saveBtn=e.target.closest('.btn-save');
     const cancelBtn=e.target.closest('.btn-cancel');
+    const delBtn=e.target.closest('.btn-del');
     if(editBtn){ enterEdit(editBtn.closest('tr')); }
     else if(cancelBtn){ exitEdit(cancelBtn.closest('tr')); }
     else if(saveBtn){ saveRow(saveBtn.closest('tr')); }
+    else if(delBtn){ deleteResp(delBtn); }
   });
   document.getElementById('fCliente').addEventListener('change',render);
   document.getElementById('onlyBl').addEventListener('change',render);
