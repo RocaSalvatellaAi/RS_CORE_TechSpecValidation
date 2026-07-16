@@ -418,7 +418,7 @@
       .replace(/[̀-ͯ]/g,'').replace(/\s+/g,' ').trim();
     const reqLabel = s => norm(String(s==null?'':s).split(/¶|\n|default\s*:/i)[0]);
     // Glifos que cuentan como "casilla marcada": ☑ ☒ ✓ ✔ ✖ ✗ ✘ ■ ● █ x X
-    const CHECKED = /[☑☒✓✔✖✗✘■●█xX]/;
+    const CHECKED = /[☑☒⊠⊗✓✔✕✖✗✘×■▪◼◾●⬤█xX]/; // casillas marcadas (Word usa varias)
     const OPTS = [[/igual/i,'ok'],[/adaptar/i,'ad'],[/bloq/i,'bl'],[/n\s*\/?\s*d/i,'pd']];
     // Frases de marcador de la plantilla en blanco (no son respuestas reales): se descartan.
     const PLACE_PHRASES = ['que usa/prefiere','que usais/preferis','notas, decision'];
