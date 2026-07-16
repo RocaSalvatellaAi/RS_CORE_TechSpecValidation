@@ -5,6 +5,7 @@
     { "route": "/api/responses", "allowedRoles": ["rs"] },
     { "route": "/api/update", "allowedRoles": ["rs"] },
     { "route": "/api/delete", "allowedRoles": ["rs"] },
+    { "route": "/api/purge", "allowedRoles": ["rs"] },
     { "route": "/api/submit", "allowedRoles": ["anonymous"] }
   ],
   "responseOverrides": {

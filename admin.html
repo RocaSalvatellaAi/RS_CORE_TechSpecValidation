@@ -119,6 +119,7 @@
       </label>
       <label class="chk"><input type="checkbox" id="onlyBl"> Solo requisitos con bloqueante</label>
       <button onclick="load()">↻ Actualizar</button>
+      <button onclick="purgeExcept()" title="Eliminar todas las respuestas excepto las de un cliente">🧹 Depurar…</button>
       <span class="sp" style="flex:1"></span>
       <span class="legend">
         <span><i class="v-dot v-ok"></i> Igual</span>
@@ -331,6 +332,21 @@
     else if(saveBtn){ saveRow(saveBtn.closest('tr')); }
     else if(delBtn){ deleteResp(delBtn); }
   });
+  async function purgeExcept(){
+    const keep=(prompt('Conservar SOLO las respuestas de este cliente (se borrará TODO lo demás):','LANDER')||'').trim();
+    if(!keep) return;
+    const others=[...new Set(DATA.map(clientName))].filter(n=>n!==keep);
+    if(!others.length){ toast('No hay otros clientes que borrar'); return; }
+    if(!confirm(`Se eliminarán TODAS las respuestas cuyo cliente NO sea «${keep}».\n\nSe borrarán: ${others.join(', ')}.\n\nEsta acción no se puede deshacer. ¿Continuar?`)) return;
+    try{
+      const r=await fetch('api/purge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keep:[keep]})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok || !d.ok) throw new Error(d.error||('El servidor respondió '+r.status));
+      toast(`Eliminadas ${d.deleted} · conservadas ${d.kept}`);
+      load();
+    }catch(e){ toast('No se pudo depurar: '+(e.message||e), true); }
+  }
+
   document.getElementById('fCliente').addEventListener('change',render);
   document.getElementById('onlyBl').addEventListener('change',render);
   whoami(); load();
