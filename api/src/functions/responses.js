@@ -14,6 +14,8 @@ function rebuild(entity) {
     client: entity.partitionKey,
     id: entity.rowKey,
     submittedAt: entity.submittedAt,
+    editedAt: entity.editedAt || null,
+    editedBy: entity.editedBy || null,
     answersCount: entity.answersCount,
     pageUrl: entity.pageUrl,
     state,

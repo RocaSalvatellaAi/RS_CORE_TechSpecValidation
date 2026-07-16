@@ -3,6 +3,7 @@
     { "route": "/admin", "rewrite": "/admin.html", "allowedRoles": ["rs"] },
     { "route": "/admin.html", "allowedRoles": ["rs"] },
     { "route": "/api/responses", "allowedRoles": ["rs"] },
+    { "route": "/api/update", "allowedRoles": ["rs"] },
     { "route": "/api/submit", "allowedRoles": ["anonymous"] }
   ],
   "responseOverrides": {

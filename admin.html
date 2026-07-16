@@ -41,38 +41,55 @@
     .toolbar .chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);}
     .card{background:var(--paper);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh-card);overflow:hidden;margin-bottom:22px;}
     .sh{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);}
-    .sh h2{font-size:16px;font-weight:700;}
+    .sh h2{font-size:17px;font-weight:700;}
     .sh p{margin:2px 0 0;font-size:12px;color:var(--muted);}
-    table{width:100%;border-collapse:collapse;}
-    th,td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;text-align:left;vertical-align:top;}
-    th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;}
-    .secrow td{background:var(--primary-dark);color:#fff;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.06em;padding:11px 14px;}
-    tr.req-row td{border-bottom:1px solid var(--border);}
-    td.req{background:#FbFcFd;}
-    .ans .verdict{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
-    .ans .alt{font-size:13px;color:var(--text);}
-    .ans .nt{font-size:12px;color:var(--muted);margin-top:2px;font-style:italic;}
-    .ans .alt b{color:var(--primary-dark);}
-    td.ans{min-width:210px;border-left:1px solid var(--border);}
-    .ficha td{font-size:13px;} .ficha .k{color:var(--muted);font-weight:600;width:34%;}
-    .req{color:var(--text);} .req small{display:block;color:var(--muted);font-size:11px;font-weight:400;}
-    .cell{text-align:center;white-space:nowrap;}
-    .v-dot{display:inline-block;width:12px;height:12px;border-radius:50%;cursor:help;}
-    .v-ok{background:var(--success);} .v-ad{background:var(--warning);} .v-bl{background:var(--error);} .v-pd{background:var(--disabled);opacity:.5;}
-    .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;}
-    .tag.ok{background:rgba(47,161,87,.12);color:var(--success);}
-    .tag.ad{background:rgba(240,160,32,.14);color:#946200;}
-    .tag.bl{background:rgba(229,72,77,.12);color:var(--error);}
-    .clienthead{font-family:var(--head);font-weight:700;}
-    .clienthead small{display:block;font-weight:400;font-size:11px;color:var(--muted);}
+
+    /* Ficha de contexto del cliente */
+    .ctxwrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+    @media(max-width:900px){.ctxwrap{grid-template-columns:1fr 1fr;}}
+    .ctx{background:var(--paper);padding:10px 14px;}
+    .ctx span{display:block;font-size:11px;color:var(--muted);font-weight:600;}
+    .ctx b{font-size:13.5px;}
+
+    /* Sección + tabla de 4 columnas */
+    .sec{border-top:1px solid var(--border);}
+    .sec-h{background:var(--primary-dark);color:#fff;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;padding:9px 16px;}
+    table.q{width:100%;border-collapse:collapse;table-layout:fixed;}
+    table.q th{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:#F6FAFD;text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);}
+    table.q td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top;word-wrap:break-word;}
+    table.q tr:last-child td{border-bottom:0;}
+    .c-req{width:26%;} .c-v{width:16%;} .c-alt{width:25%;} .c-nt{width:25%;} .c-ed{width:8%;}
+    td.req b{font-weight:600;} td.req small{display:block;color:var(--muted);font-size:11px;font-weight:400;margin-top:2px;}
+    .muted{color:var(--disabled);}
+    .tag{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:999px;}
+    .tag.ok{background:rgba(47,161,87,.14);color:var(--success);}
+    .tag.ad{background:rgba(240,160,32,.16);color:#946200;}
+    .tag.bl{background:rgba(229,72,77,.14);color:var(--error);}
+    .tag.pd{background:var(--subtle);color:var(--muted);}
+    .nt-cell{font-style:italic;color:#3a4a55;}
+
+    /* Controles de edición */
+    .btn-edit,.btn-save,.btn-cancel{font-family:inherit;font-size:12px;font-weight:600;border-radius:7px;padding:6px 10px;cursor:pointer;border:1px solid var(--border-strong);background:#fff;color:var(--text);white-space:nowrap;}
+    .btn-edit:hover{border-color:var(--primary);color:var(--primary-dark);}
+    .btn-save{background:var(--success);border-color:var(--success);color:#fff;margin-right:5px;}
+    .btn-save:hover{background:#268049;}
+    .btn-cancel:hover{border-color:var(--error);color:var(--error);}
+    tr.editing{background:#F4FAFE;}
+    tr.editing td{vertical-align:top;}
+    .ed-v{font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;width:100%;background:#fff;}
+    .ed-alt,.ed-nt{font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:7px;width:100%;min-height:52px;resize:vertical;}
+    .ed-alt:focus,.ed-nt:focus,.ed-v:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,157,224,.18);}
+
     .empty{padding:50px 20px;text-align:center;color:var(--muted);}
     .empty h2{font-size:18px;margin-bottom:8px;}
-    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:12px 18px;}
+    .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);}
     .legend span{display:inline-flex;gap:6px;align-items:center;}
-    details.drill{border-top:1px solid var(--border);}
-    details.drill summary{padding:12px 18px;cursor:pointer;font-weight:600;font-size:13px;}
-    details.drill .dc{padding:0 18px 16px;}
+    .v-dot{display:inline-block;width:11px;height:11px;border-radius:50%;}
+    .v-ok{background:var(--success);} .v-ad{background:var(--warning);} .v-bl{background:var(--error);} .v-pd{background:var(--disabled);opacity:.6;}
     .banner{background:#FFF4E5;border:1px solid #F0C486;color:#7a4a00;border-radius:12px;padding:12px 16px;font-size:13px;margin-bottom:18px;}
+    .toast{position:fixed;bottom:18px;right:18px;background:var(--ink);color:#fff;padding:10px 15px;border-radius:9px;font-size:13px;box-shadow:var(--sh-lg);opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none;z-index:300;}
+    .toast.on{opacity:1;transform:none;}
+    .toast.err{background:var(--error);}
   </style>
 </head>
 <body>
@@ -98,10 +115,10 @@
       <label class="chk">Cliente
         <select id="fCliente"><option value="">Todos</option></select>
       </label>
-      <label class="chk"><input type="checkbox" id="onlyBl"> Solo requisitos con algún bloqueante</label>
+      <label class="chk"><input type="checkbox" id="onlyBl"> Solo requisitos con bloqueante</label>
       <button onclick="load()">↻ Actualizar</button>
       <span class="sp" style="flex:1"></span>
-      <span class="legend" style="padding:0">
+      <span class="legend">
         <span><i class="v-dot v-ok"></i> Igual</span>
         <span><i class="v-dot v-ad"></i> Adaptar</span>
         <span><i class="v-dot v-bl"></i> Bloqueante</span>
@@ -111,32 +128,39 @@
 
     <div id="content"></div>
   </div>
+  <div class="toast" id="toast"></div>
 
   <script src="content.js"></script>
   <script>
   const STORE='rs-techspec:';
   const VLABEL={ok:'Igual',ad:'Adaptar',bl:'Bloqueante',pd:'N/D'};
+  const VORDER=['ok','ad','bl','pd'];
   let DATA=[]; // respuestas crudas del API
 
-  // Aplana META+SECTIONS a una lista ordenada de {sec, key, label} para las filas de la matriz.
   function schema(){
     const { SECTIONS } = window.TECHSPEC_CONTENT;
-    const rows=[];
-    SECTIONS.forEach((sec,si)=>sec.rows.forEach((r,ri)=>rows.push({sec:sec.title,icon:sec.icon,key:`s${si}r${ri}`,label:r[0],def:r[1]})));
-    return rows;
+    return SECTIONS.map((sec,si)=>({
+      title:sec.title, icon:sec.icon,
+      rows:sec.rows.map((r,ri)=>({key:`s${si}r${ri}`,label:r[0],def:r[1]}))
+    }));
   }
   function metaFields(){ return window.TECHSPEC_CONTENT.META.fields; }
+  function stOf(r,k){ return r.state[STORE+'st_'+k]||''; }
+  function altOf(r,k){ return r.state[STORE+'alt_'+k]||''; }
+  function ntOf(r,k){ return r.state[STORE+'nt_'+k]||''; }
+  function metaOf(r,i){ return r.state[STORE+'meta_'+i]||''; }
+  function clientName(r){ return metaOf(r,0) || r.client || '—'; }
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-  function stOf(resp,key){ return resp.state[STORE+'st_'+key]; }
-  function altOf(resp,key){ return resp.state[STORE+'alt_'+key]||''; }
-  function ntOf(resp,key){ return resp.state[STORE+'nt_'+key]||''; }
-  function metaOf(resp,i){ return resp.state[STORE+'meta_'+i]||''; }
-  function clientName(resp){ return metaOf(resp,0) || resp.client || '—'; }
+  function toast(msg,isErr){
+    const t=document.getElementById('toast'); t.textContent=msg;
+    t.className='toast on'+(isErr?' err':''); clearTimeout(toast._t);
+    toast._t=setTimeout(()=>t.className='toast',2200);
+  }
 
   async function whoami(){
     try{
-      const r=await fetch('/.auth/me'); const d=await r.json();
-      const p=d.clientPrincipal;
+      const r=await fetch('/.auth/me'); const d=await r.json(); const p=d.clientPrincipal;
       if(p){ document.getElementById('who').textContent=p.userDetails; document.getElementById('logout').style.display='inline-block'; }
     }catch(e){}
   }
@@ -150,8 +174,8 @@
       if(r.status===401){ location.href='/.auth/login/aad'; return; }
       res=await r.json();
     }catch(e){
-      document.getElementById('banner').innerHTML='<div class="banner">No se ha podido contactar con la API. Esto solo funciona con el despliegue en Azure Static Web Apps (no en GitHub Pages).</div>';
-      c.innerHTML='<div class="empty"><h2>Sin conexión con el almacén</h2><p>El panel requiere el backend de SWA + Functions. Ver README.</p></div>';
+      document.getElementById('banner').innerHTML='<div class="banner">No se ha podido contactar con la API. Esto solo funciona con el despliegue en Azure Static Web Apps.</div>';
+      c.innerHTML='<div class="empty"><h2>Sin conexión con el almacén</h2><p>El panel requiere el backend de SWA + Functions.</p></div>';
       setKpis([]); return;
     }
     DATA=(res&&res.responses)||[];
@@ -159,8 +183,8 @@
   }
 
   function setKpis(list){
-    const rows=schema();
-    let bl=0; list.forEach(r=>rows.forEach(row=>{ if(stOf(r,row.key)==='bl') bl++; }));
+    const secs=schema();
+    let bl=0; list.forEach(r=>secs.forEach(s=>s.rows.forEach(row=>{ if(stOf(r,row.key)==='bl') bl++; })));
     document.getElementById('k-resp').textContent=list.length;
     document.getElementById('k-cli').textContent=new Set(list.map(clientName)).size;
     document.getElementById('k-bl').textContent=bl;
@@ -173,58 +197,117 @@
     const names=[...new Set(DATA.map(clientName))].sort();
     sel.innerHTML='<option value="">Todos</option>'+names.map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
   }
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function fmtDate(s){ return s?new Date(s).toLocaleString('es-ES'):''; }
+
+  // ── Render por cliente: cada sección como tabla de 4 columnas ───────────────
+  function rowHtml(resp,row){
+    const v=stOf(resp,row.key), alt=altOf(resp,row.key), nt=ntOf(resp,row.key);
+    return `<tr data-key="${row.key}">
+      <td class="req"><b>${esc(row.label)}</b><small>Default RS: ${esc(row.def)}</small></td>
+      <td class="v-cell">${v?`<span class="tag ${v}">${VLABEL[v]}</span>`:'<span class="muted">Sin responder</span>'}</td>
+      <td class="alt-cell">${alt?esc(alt):'<span class="muted">—</span>'}</td>
+      <td class="nt-cell">${nt?esc(nt):'<span class="muted">—</span>'}</td>
+      <td class="ed-cell"><button type="button" class="btn-edit">✎ Editar</button></td>
+    </tr>`;
+  }
+
+  function clientBlock(resp,secs,meta,onlyBl){
+    const ctx=meta.map((lb,i)=>{ const val=metaOf(resp,i); return val?`<div class="ctx"><span>${esc(lb)}</span><b>${esc(val)}</b></div>`:''; }).join('');
+    let sections=secs.map(sec=>{
+      const rows=sec.rows.filter(row=> !onlyBl || stOf(resp,row.key)==='bl');
+      if(!rows.length) return '';
+      return `<div class="sec"><div class="sec-h">${sec.icon} ${esc(sec.title)}</div>
+        <table class="q"><colgroup><col class="c-req"><col class="c-v"><col class="c-alt"><col class="c-nt"><col class="c-ed"></colgroup>
+        <thead><tr><th>Requisito</th><th>¿Lo usan?</th><th>Alternativa / preferencia</th><th>Notas</th><th></th></tr></thead>
+        <tbody>${rows.map(row=>rowHtml(resp,row)).join('')}</tbody></table></div>`;
+    }).join('');
+    const edited=resp.editedAt?` · editado ${fmtDate(resp.editedAt)}${resp.editedBy?' por '+esc(resp.editedBy):''}`:'';
+    return `<div class="card client-block" data-id="${esc(resp.id)}" data-client="${esc(resp.client)}">
+      <div class="sh"><div><h2>${esc(clientName(resp))}</h2><p>Enviado ${fmtDate(resp.submittedAt)}${edited}</p></div></div>
+      <div class="ctxwrap">${ctx||'<div class="ctx"><span class="muted">Sin datos de contexto</span></div>'}</div>
+      ${sections}
+    </div>`;
+  }
 
   function render(){
     setKpis(DATA);
     const fc=document.getElementById('fCliente').value;
     const onlyBl=document.getElementById('onlyBl').checked;
-    let list=fc?DATA.filter(r=>clientName(r)===fc):DATA;
+    const list=fc?DATA.filter(r=>clientName(r)===fc):DATA;
     const c=document.getElementById('content');
-
     if(!list.length){
-      c.innerHTML='<div class="empty"><h2>Todavía no hay respuestas</h2><p>Cuando un cliente pulse «Enviar a RS» en el cuestionario, aparecerá aquí.</p></div>';
+      c.innerHTML='<div class="empty"><h2>Todavía no hay respuestas</h2><p>Cuando un cliente pulse «Enviar a RS» en el cuestionario, aparecerá aquí. También puedes importar un DOCX/HTML desde el cuestionario y enviarlo.</p></div>';
       return;
     }
-
-    const rows=schema(), meta=metaFields();
-    const colhead='<th style="min-width:230px">Requisito</th>'+list.map(r=>
-      `<th class="ans clienthead">${esc(clientName(r))}<small>${new Date(r.submittedAt).toLocaleString('es-ES')}</small></th>`).join('');
-
-    // 1) Ficha de cliente / proyecto (todos los campos de contexto).
-    let ficha=meta.map((lb,i)=>{
-      const vals=list.map(r=>metaOf(r,i));
-      if(onlyBl) return ''; // en modo bloqueantes la ficha no aporta
-      return `<tr><td class="k">${esc(lb)}</td>`+vals.map(v=>`<td class="ans">${v?esc(v):'<span style="color:var(--disabled)">—</span>'}</td>`).join('')+'</tr>';
-    }).join('');
-
-    // 2) Comparación de requisitos con veredicto + alternativa + notas en cada celda.
-    let body=''; let curSec='';
-    rows.forEach(row=>{
-      const cells=list.map(r=>({v:stOf(r,row.key),alt:altOf(r,row.key),nt:ntOf(r,row.key)}));
-      if(onlyBl && !cells.some(x=>x.v==='bl')) return;
-      if(row.sec!==curSec){ curSec=row.sec; body+=`<tr class="secrow"><td colspan="${list.length+1}">${row.icon} ${esc(row.sec)}</td></tr>`; }
-      body+=`<tr class="req-row"><td class="req">${esc(row.label)}<small>Default RS: ${esc(row.def)}</small></td>`+
-        cells.map(x=>{
-          if(!x.v && !x.alt && !x.nt) return '<td class="ans"><span class="v-dot v-pd"></span> <span style="color:var(--disabled);font-size:12px">Sin responder</span></td>';
-          let h='<td class="ans">';
-          h+=`<div class="verdict"><span class="v-dot v-${x.v||'pd'}"></span> <span class="tag ${x.v||''}">${VLABEL[x.v]||'—'}</span></div>`;
-          if(x.alt) h+=`<div class="alt"><b>Alternativa:</b> ${esc(x.alt)}</div>`;
-          if(x.nt)  h+=`<div class="nt">📝 ${esc(x.nt)}</div>`;
-          return h+'</td>';
-        }).join('')+'</tr>';
-    });
-
-    c.innerHTML=`<div class="card">
-      <div class="sh"><div><h2>Ficha de cliente / proyecto</h2><p>Datos de contexto de cada respuesta.</p></div></div>
-      <div style="overflow-x:auto"><table class="ficha"><thead><tr><th>Campo</th>${list.map(r=>`<th class="ans clienthead">${esc(clientName(r))}</th>`).join('')}</tr></thead><tbody>${ficha||'<tr><td colspan="'+(list.length+1)+'" style="color:var(--muted)">Sin datos de contexto</td></tr>'}</tbody></table></div>
-    </div>
-    <div class="card">
-      <div class="sh"><div><h2>Comparación de requisitos</h2><p>Veredicto, alternativa/preferencia y notas de cada cliente, requisito a requisito.</p></div></div>
-      <div style="overflow-x:auto"><table><thead><tr>${colhead}</tr></thead><tbody>${body}</tbody></table></div>
-    </div>`;
+    const secs=schema(), meta=metaFields();
+    c.innerHTML=list.map(r=>clientBlock(r,secs,meta,onlyBl)).join('');
   }
 
+  function findResp(id){ return DATA.find(r=>String(r.id)===String(id)); }
+  function findRow(key){ for(const s of schema()){ const r=s.rows.find(x=>x.key===key); if(r) return r; } return {key,label:key,def:''}; }
+
+  function enterEdit(tr){
+    const resp=findResp(tr.closest('.client-block').dataset.id); if(!resp) return;
+    const key=tr.dataset.key;
+    const v=stOf(resp,key), alt=altOf(resp,key), nt=ntOf(resp,key);
+    tr.classList.add('editing');
+    tr.querySelector('.v-cell').innerHTML=
+      `<select class="ed-v"><option value=""${!v?' selected':''}>— Sin responder</option>`+
+      VORDER.map(o=>`<option value="${o}"${o===v?' selected':''}>${VLABEL[o]}</option>`).join('')+`</select>`;
+    tr.querySelector('.alt-cell').innerHTML=`<textarea class="ed-alt" placeholder="Alternativa / preferencia…">${esc(alt)}</textarea>`;
+    tr.querySelector('.nt-cell').innerHTML=`<textarea class="ed-nt" placeholder="Notas, decisión, responsable…">${esc(nt)}</textarea>`;
+    tr.querySelector('.ed-cell').innerHTML=`<button type="button" class="btn-save">💾 Guardar</button><button type="button" class="btn-cancel">Cancelar</button>`;
+    const ta=tr.querySelector('.ed-alt'); if(ta) ta.focus();
+  }
+
+  function exitEdit(tr){
+    const resp=findResp(tr.closest('.client-block').dataset.id);
+    const row=findRow(tr.dataset.key);
+    tr.classList.remove('editing');
+    tr.innerHTML=rowHtml(resp,row).replace(/^<tr[^>]*>/,'').replace(/<\/tr>\s*$/,'');
+  }
+
+  async function saveRow(tr){
+    const block=tr.closest('.client-block');
+    const resp=findResp(block.dataset.id); if(!resp) return;
+    const key=tr.dataset.key;
+    const v=tr.querySelector('.ed-v').value;
+    const alt=tr.querySelector('.ed-alt').value.trim();
+    const nt=tr.querySelector('.ed-nt').value.trim();
+    const state=Object.assign({}, resp.state);
+    if(v) state[STORE+'st_'+key]=v; else delete state[STORE+'st_'+key];
+    if(alt) state[STORE+'alt_'+key]=alt; else delete state[STORE+'alt_'+key];
+    if(nt) state[STORE+'nt_'+key]=nt; else delete state[STORE+'nt_'+key];
+    const btn=tr.querySelector('.btn-save'); btn.disabled=true; btn.textContent='Guardando…';
+    try{
+      const r=await fetch('api/update',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({client:resp.client,id:resp.id,state})});
+      const d=await r.json().catch(()=>({}));
+      if(!r.ok || !d.ok) throw new Error(d.error||('El servidor respondió '+r.status));
+      resp.state=state; resp.editedAt=d.editedAt||resp.editedAt; if(d.editedBy) resp.editedBy=d.editedBy;
+      const row=findRow(key);
+      tr.classList.remove('editing');
+      tr.innerHTML=rowHtml(resp,row).replace(/^<tr[^>]*>/,'').replace(/<\/tr>\s*$/,'');
+      // refrescar el subtítulo de "editado" del bloque
+      const p=block.querySelector('.sh p');
+      if(p) p.textContent=`Enviado ${fmtDate(resp.submittedAt)}`+(resp.editedAt?` · editado ${fmtDate(resp.editedAt)}${resp.editedBy?' por '+resp.editedBy:''}`:'');
+      setKpis(DATA);
+      toast('Cambios guardados en Azure');
+    }catch(e){
+      btn.disabled=false; btn.textContent='💾 Guardar';
+      toast('No se pudo guardar: '+(e.message||e), true);
+    }
+  }
+
+  document.getElementById('content').addEventListener('click',e=>{
+    const editBtn=e.target.closest('.btn-edit');
+    const saveBtn=e.target.closest('.btn-save');
+    const cancelBtn=e.target.closest('.btn-cancel');
+    if(editBtn){ enterEdit(editBtn.closest('tr')); }
+    else if(cancelBtn){ exitEdit(cancelBtn.closest('tr')); }
+    else if(saveBtn){ saveRow(saveBtn.closest('tr')); }
+  });
   document.getElementById('fCliente').addEventListener('change',render);
   document.getElementById('onlyBl').addEventListener('change',render);
   whoami(); load();
