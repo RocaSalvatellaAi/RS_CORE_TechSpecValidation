@@ -6,14 +6,28 @@ const TABLE = 'techspecresponses';
 const CHUNK = 60000;
 const MAX_BODY = 512 * 1024;
 
+// Defensa en profundidad: la ruta ya exige rol "admin" en staticwebapp.config.json,
+// pero validamos también aquí por si la Function se invoca sin pasar por el proxy de SWA.
+function hasRole(request, role) {
+  try {
+    const b = request.headers.get('x-ms-client-principal');
+    if (!b) return false;
+    const p = JSON.parse(Buffer.from(b, 'base64').toString('utf8')) || {};
+    return Array.isArray(p.userRoles) && p.userRoles.includes(role);
+  } catch { return false; }
+}
+
 // POST /api/update  { client, id, state }
 // Reescribe (edita) una respuesta ya guardada. Protegido por rol "rs"
 // en staticwebapp.config.json. Lo usa el panel de admin para editar
 // veredicto / alternativa / notas de cada requisito.
 app.http('update', {
   methods: ['POST'],
-  authLevel: 'anonymous', // el gate real lo pone SWA vía rol "rs" en la ruta
+  authLevel: 'anonymous', // el gate real lo pone SWA vía rol "admin" en la ruta
   handler: async (request, context) => {
+    if (!hasRole(request, 'admin')) {
+      return { status: 403, jsonBody: { ok: false, error: 'Solo un administrador puede editar' } };
+    }
     let body;
     try {
       body = await request.json();
