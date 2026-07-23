@@ -3,13 +3,27 @@ const { TableClient } = require('@azure/data-tables');
 
 const TABLE = 'techspecresponses';
 
+// Defensa en profundidad: la ruta ya exige rol "admin" en staticwebapp.config.json,
+// pero validamos también aquí por si la Function se invoca sin pasar por el proxy de SWA.
+function hasRole(request, role) {
+  try {
+    const b = request.headers.get('x-ms-client-principal');
+    if (!b) return false;
+    const p = JSON.parse(Buffer.from(b, 'base64').toString('utf8')) || {};
+    return Array.isArray(p.userRoles) && p.userRoles.includes(role);
+  } catch { return false; }
+}
+
 // POST /api/delete  { client, id }
-// Elimina una respuesta guardada. Protegido por rol "rs" en
+// Elimina una respuesta guardada. Protegido por rol "admin" en
 // staticwebapp.config.json. Lo usa el panel de admin.
 app.http('delete', {
   methods: ['POST'],
-  authLevel: 'anonymous', // el gate real lo pone SWA vía rol "rs" en la ruta
+  authLevel: 'anonymous', // el gate real lo pone SWA vía rol "admin" en la ruta
   handler: async (request, context) => {
+    if (!hasRole(request, 'admin')) {
+      return { status: 403, jsonBody: { ok: false, error: 'Solo un administrador puede eliminar' } };
+    }
     let body;
     try {
       body = await request.json();

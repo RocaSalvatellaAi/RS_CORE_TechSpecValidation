@@ -217,7 +217,7 @@
       <td class="v-cell">${v?`<span class="tag ${v}">${VLABEL[v]}</span>`:'<span class="muted">Sin responder</span>'}</td>
       <td class="alt-cell">${alt?esc(alt):'<span class="muted">—</span>'}</td>
       <td class="nt-cell">${nt?esc(nt):'<span class="muted">—</span>'}</td>
-      <td class="ed-cell"><button type="button" class="btn-edit">✎ Editar</button></td>
+      <td class="ed-cell">${IS_ADMIN?'<button type="button" class="btn-edit">✎ Editar</button>':''}</td>
     </tr>`;
   }
 
